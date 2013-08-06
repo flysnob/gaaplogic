@@ -957,8 +957,9 @@ function update_allocation($project_id, $cat_alloc_array, $sp_accum_array){
 					break;
 				case 2: 
 					switch ($disc_category){
-							// specified future purchase discount
+							// specified future purchase discount // add conditions to handle VSOE status
 						case 1:
+						
 							$el_amt = $element['rr_el_disc_amt'] - $element['rr_el_sfp_amt'] / ($sp_accum_array['sw'] + $sp_accum_array['sw_sfp_amt'] - $proj_sw_undeliv_vsoe_amt) * $element['rr_el_disc_amt'];
 							$el_contingent = 0;
 							break;
@@ -1370,7 +1371,7 @@ function update_sw_projmeta($project_id){
 	}
 	
 	if ($sw_count !== 0){
-		if ($vsoe_count / $sw_count == 1){ // if ratio of # vsoe to # elements less than 1, then vsoe_flag is zero
+		if ($vsoe_count / $sw_count == 1){ // if ratio of # vsoe to # elements is 1, then vsoe_flag is 1
 			$vsoe_flag = 1;
 			foreach ($project_metas as $project_meta){
 				if ($project_meta['gl_proj_id'] == $project_id && $project_meta['gl_proj_meta_key'] == '_proj_sw_vsoe_flag'){
@@ -1549,12 +1550,12 @@ function update_sw_revrec($project_id, $stats){
 					$wpdb->update( 'wp_gl_rr', array ("rr_el_stop_flag" => 1), array ("rr_el_id" => $element['rr_el_id']) );
 				}
 				
-			//if last undelivered is PCS, use ratable over PCS term
+			//if last undelivered is PCS, use ratably over PCS term
 			} else if ($sw_undeliv_pcs_flag == 1){ // if _proj_sw_undeliv_pcs_flag is 1, then last deliverable is PCS
 				$revrecmeth = array('rr_stat_id' => 8, 'status_desc' => $stats[7]['rr_stat_desc'], 'status_date' => '');
 				$wpdb->update( 'wp_gl_rr', array ("rr_el_stop_flag" => 1), array ("rr_el_id" => $element['rr_el_id']) );
 
-			// if last undelivered is services, use ratable over services term
+			// if last undelivered is services, use ratably over services term
 			} else if ($sw_undeliv_serv_flag == 1){ // if _proj_sw_undeliv_serv_flag is 1, then last deliverable is services
 				foreach ($methods as $method){ // get the methods list
 					if ($method['rr_meth_id'] == $element['rr_el_meth']){ // match the last deliverable method to the method list
@@ -1621,7 +1622,7 @@ function update_cont_date($value){
 }
 
 /*
-	Calculate combined reve rec method
+	Calculate combined rev rec method
 */
 
 function update_comb_revrec_meth($value, $methods, $project_metas, $stats, $project_id){
