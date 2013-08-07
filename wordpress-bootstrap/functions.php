@@ -1214,7 +1214,7 @@ function update_fr_allocation($project_id){
 	Software VSOE flag (for meta table)
 */
 
-function update_sw_vsoe($project_id){
+function update_sw_vsoe($project_id){ // launched from element save, edit and delete
 	global $wpdb;
 	$elements = $wpdb->get_results( "SELECT * FROM wp_gl_rr", ARRAY_A );
 	foreach ($elements as $element){
@@ -1290,7 +1290,7 @@ function update_comb_projmeta($project_id){
 					$status_date = $element['rr_el_odt_2'];
 					$method = $element['rr_el_meth'];
 				} else if ($element['rr_el_dt_2'] > $status_date) { // selects the latest delivery date and sets date and method
-					$status_date = $element['rr_el_odt_2'];
+					$status_date = $element['rr_el_dt_2'];
 					$method = $element['rr_el_meth'];
 				}
 			}
@@ -1322,7 +1322,7 @@ function update_comb_projmeta($project_id){
 
 function update_sw_projmeta($project_id){
 	global $wpdb;
-	$elements = $wpdb->get_results( "SELECT * FROM wp_gl_rr WHERE gl_proj_id = $project_id", ARRAY_A );
+	$elements = $wpdb->get_results( "SELECT * FROM wp_gl_rr WHERE gl_proj_id = $project_id", ARRAY_A ); 
 	$projects = $wpdb->get_results( "SELECT * FROM wp_gl_proj WHERE gl_proj_id = $project_id", ARRAY_A );
 	$project_metas = $wpdb->get_results( "SELECT * FROM wp_gl_projmeta WHERE gl_proj_id = $project_id", ARRAY_A );
 	
@@ -1338,26 +1338,26 @@ function update_sw_projmeta($project_id){
 	
 	foreach ($elements as $element){
 		if ($element['gl_proj_id'] == $project_id){
-			if ($element['rr_el_meth_cat'] == 2){ // if software
+			if ($element['rr_el_meth_cat'] == 2){ // if element is software increment sw_count
 				$sw_count++;
-				if ($element['rr_el_sp_basis'] == 1){ // if vsoe is yes
+				if ($element['rr_el_sp_basis'] == 1){ // if element has vsoe increment vsoe_count
 					$vsoe_count++;
 				}
-				if ($element['rr_el_odt_2'] < 1 && $element['rr_el_dt_2'] < 1){ // if not delivered
-						$undeliv_count++;
-						$undeliv_meth = $element['rr_el_meth'];
-						if ($element['rr_el_sp_basis'] == 1){ // if vsoe is yes
-							$undeliv_vsoe_count++;
-							$undeliv_vsoe_amt = $undeliv_vsoe_amt + $element['rr_el_sell_price'];
-						}
-						
-						if ($element['rr_el_del'] == 7){ //if PCS
-							$undeliv_pcs_count++;
-						}
+				if ($element['rr_el_odt_2'] < 1 && $element['rr_el_dt_2'] < 1){ // if not delivered increment undeliv_count
+					$undeliv_count++;
+					$undeliv_meth = $element['rr_el_meth']; // sets undelivered method for use below
+					if ($element['rr_el_sp_basis'] == 1){ // if vsoe is yes increment undeliv_vsoe_count
+						$undeliv_vsoe_count++;
+						$undeliv_vsoe_amt = $undeliv_vsoe_amt + $element['rr_el_sell_price'];
+					}
 					
-						if ($element['rr_el_del'] == 8){ //if services
-							$undeliv_serv_count++;
-						}
+					if ($element['rr_el_del'] == 7){ //if PCS increment undeliv_pcs_count
+						$undeliv_pcs_count++;
+					}
+				
+					if ($element['rr_el_del'] == 8){ //if services increment undeliv_serv_count
+						$undeliv_serv_count++;
+					}
 				} else if ($element['rr_el_odt_2'] > $latest_deliv_date || $element['rr_el_dt_2'] > $latest_deliv_date){ // if not all vsoe, undel vsoe, undel PCS or undel services
 					$latest_deliv_date = max($element['rr_el_odt_2'], $element['rr_el_dt_2']);
 					$latest_deliv_meth = $element['rr_el_meth'];
@@ -1370,26 +1370,53 @@ function update_sw_projmeta($project_id){
 		}
 	}
 	
+	foreach ($project_metas as $project_meta){
+		if ($project_meta['gl_proj_id'] == $project_id && $project_meta['gl_proj_meta_key'] == '_proj_sw_all_vsoe_flag'){
+			$wpdb->update( 'wp_gl_projmeta', array ("gl_proj_meta_value" => 0), array ("gl_proj_meta_id" => $project_meta['gl_proj_meta_id']) );
+		}
+		if ($project_meta['gl_proj_id'] == $project_id && $project_meta['gl_proj_meta_key'] == '_proj_sw_vsoe_flag'){
+			$wpdb->update( 'wp_gl_projmeta', array ("gl_proj_meta_value" => 0), array ("gl_proj_meta_id" => $project_meta['gl_proj_meta_id']) );
+		}
+		if ($project_meta['gl_proj_id'] == $project_id && $project_meta['gl_proj_meta_key'] == '_proj_sw_undeliv_vsoe_flag'){
+			$wpdb->update( 'wp_gl_projmeta', array ("gl_proj_meta_value" => 0), array ("gl_proj_meta_id" => $project_meta['gl_proj_meta_id']) );
+		}
+		if ($project_meta['gl_proj_id'] == $project_id && $project_meta['gl_proj_meta_key'] == '_proj_sw_undeliv_vsoe_amt'){
+			$wpdb->update( 'wp_gl_projmeta', array ("gl_proj_meta_value" => 0), array ("gl_proj_meta_id" => $project_meta['gl_proj_meta_id']) );
+		}
+		if ($project_meta['gl_proj_id'] == $project_id && $project_meta['gl_proj_meta_key'] == '_proj_sw_undeliv_pcs_flag'){
+			$wpdb->update( 'wp_gl_projmeta', array ("gl_proj_meta_value" => 0), array ("gl_proj_meta_id" => $project_meta['gl_proj_meta_id']) );
+		}
+		if ($project_meta['gl_proj_id'] == $project_id && $project_meta['gl_proj_meta_key'] == '_proj_sw_undeliv_serv_flag'){
+			$wpdb->update( 'wp_gl_projmeta', array ("gl_proj_meta_value" => 0), array ("gl_proj_meta_id" => $project_meta['gl_proj_meta_id']) );
+		}
+		if ($project_meta['gl_proj_id'] == $project_id && $project_meta['gl_proj_meta_key'] == '_proj_sw_latest_deliv_date'){
+			$wpdb->update( 'wp_gl_projmeta', array ("gl_proj_meta_value" => 0), array ("gl_proj_meta_id" => $project_meta['gl_proj_meta_id']) );
+		}
+		if ($project_meta['gl_proj_id'] == $project_id && $project_meta['gl_proj_meta_key'] == '_proj_sw_latest_deliv_meth'){
+			$wpdb->update( 'wp_gl_projmeta', array ("gl_proj_meta_value" => 0), array ("gl_proj_meta_id" => $project_meta['gl_proj_meta_id']) );
+		}
+	}
+	
 	if ($sw_count !== 0){
-		if ($vsoe_count / $sw_count == 1){ // if ratio of # vsoe to # elements is 1, then vsoe_flag is 1
+		if ($vsoe_count / $sw_count == 1){ // if ratio of # vsoe to # elements is 1, then _proj_sw_all_vsoe_flag is 1 (all elements have vsoe)
 			$vsoe_flag = 1;
 			foreach ($project_metas as $project_meta){
-				if ($project_meta['gl_proj_id'] == $project_id && $project_meta['gl_proj_meta_key'] == '_proj_sw_vsoe_flag'){
+				if ($project_meta['gl_proj_id'] == $project_id && $project_meta['gl_proj_meta_key'] == '_proj_sw_all_vsoe_flag'){
 					$wpdb->update( 'wp_gl_projmeta', array ("gl_proj_meta_value" => $vsoe_flag), array ("gl_proj_meta_id" => $project_meta['gl_proj_meta_id']) );
 				}
 			}
-		} else {
+		} else { // if ratio of # vsoe to # elements is not 1, then _proj_sw_all_vsoe_flag is 1 (not all elements have vsoe)
 			$vsoe_flag = 0;
 			foreach ($project_metas as $project_meta){
-				if ($project_meta['gl_proj_id'] == $project_id && $project_meta['gl_proj_meta_key'] == '_proj_sw_vsoe_flag'){
+				if ($project_meta['gl_proj_id'] == $project_id && $project_meta['gl_proj_meta_key'] == '_proj_sw_all_vsoe_flag'){
 					$wpdb->update( 'wp_gl_projmeta', array ("gl_proj_meta_value" => $vsoe_flag), array ("gl_proj_meta_id" => $project_meta['gl_proj_meta_id']) );
 				}
 			}
 			
-			if($undeliv_vsoe_count / $undeliv_count == 1){ // if all undeliverables vsoe
+			if($undeliv_vsoe_count / $undeliv_count == 1){ // if all undelivereds have vsoe
 				foreach ($projects as $project){
 					if ($project['gl_proj_id'] == $project_id){
-						if ($project['gl_proj_fee'] > $undeliv_vsoe_amt){ // and if vsoe amt < total fee 
+						if ($project['gl_proj_fee'] >= $undeliv_vsoe_amt){ // and if vsoe amt < total fee, set _proj_sw_undeliv_vsoe_flag is 1 (residual method)
 							$residual_flag = 1;
 							foreach ($project_metas as $project_meta){
 								if ($project_meta['gl_proj_id'] == $project_id && $project_meta['gl_proj_meta_key'] == '_proj_sw_undeliv_vsoe_flag'){
@@ -1399,7 +1426,7 @@ function update_sw_projmeta($project_id){
 									$wpdb->update( 'wp_gl_projmeta', array ("gl_proj_meta_value" => $undeliv_vsoe_amt), array ("gl_proj_meta_id" => $project_meta['gl_proj_meta_id']) );
 								}
 							}
-						} else {
+						} else { // but if vsoe amt > total fee, set _proj_sw_undeliv_vsoe_flag is 0 ( can't use residual method)
 							$residual_flag = 0;
 							$undeliv_vsoe_amt = 0;
 							foreach ($project_metas as $project_meta){
@@ -1415,14 +1442,14 @@ function update_sw_projmeta($project_id){
 				}
 			} else if ($undeliv_count !== 0){ 
 				// set the pcs flag
-				if ($undeliv_pcs_count / $undeliv_count == 1){ // if only undelivs are pcs
+				if ($undeliv_pcs_count / $undeliv_count == 1){ // if only undelivs are pcs, _proj_sw_undeliv_pcs_flag is 1 (rev rec over pcs period)
 					$pcs_flag = 1;
 					foreach ($project_metas as $project_meta){
 						if ($project_meta['gl_proj_id'] == $project_id && $project_meta['gl_proj_meta_key'] == '_proj_sw_undeliv_pcs_flag'){
 							$wpdb->update( 'wp_gl_projmeta', array ("gl_proj_meta_value" => $pcs_flag), array ("gl_proj_meta_id" => $project_meta['gl_proj_meta_id']) );
 						}
 					}
-				} else {
+				} else {  // but if only undelivs are not pcs, _proj_sw_undeliv_pcs_flag is 0
 					$pcs_flag = 0;
 					foreach ($project_metas as $project_meta){
 						if ($project_meta['gl_proj_id'] == $project_id && $project_meta['gl_proj_meta_key'] == '_proj_sw_undeliv_pcs_flag'){
@@ -1431,14 +1458,14 @@ function update_sw_projmeta($project_id){
 					}
 				}
 				// set the services flag
-				if ($undeliv_serv_count / $undeliv_count == 1){ // if only undelivs are services
+				if ($undeliv_serv_count / $undeliv_count == 1){ // if only undelivs are services, _proj_sw_undeliv_serv_flag is 1 (rev rec over services period)
 					$serv_flag = 1;
 					foreach ($project_metas as $project_meta){
 						if ($project_meta['gl_proj_id'] == $project_id && $project_meta['gl_proj_meta_key'] == '_proj_sw_undeliv_serv_flag'){
 							$wpdb->update( 'wp_gl_projmeta', array ("gl_proj_meta_value" => $serv_flag), array ("gl_proj_meta_id" => $project_meta['gl_proj_meta_id']) );
 						}
 					}
-				} else {
+				} else { // but if only undelivs are not services, _proj_sw_undeliv_serv_flag is 0
 					$serv_flag = 0;
 					foreach ($project_metas as $project_meta){
 						if ($project_meta['gl_proj_id'] == $project_id && $project_meta['gl_proj_meta_key'] == '_proj_sw_undeliv_serv_flag'){
@@ -1447,7 +1474,9 @@ function update_sw_projmeta($project_id){
 					}
 				}
 						
-				if ($undeliv_count == 1 && $vsoe_flag == 0 && $residual_flag == 0 && $pcs_flag == 0 && $serv_flag == 0){ // if only 1 undelivered left
+				if ($undeliv_count == 1 && $vsoe_flag == 0 && $residual_flag == 0 && $pcs_flag == 0 && $serv_flag == 0){ // if only 1 undelivered left, 
+																														 // set _proj_sw_last_del_meth and 
+																														 // set _proj_sw_last_del_flag to 1
 					$last_deliv_meth = $undeliv_meth;
 					$last_deliv_flag = 1;
 					foreach ($project_metas as $project_meta){	
@@ -1457,13 +1486,15 @@ function update_sw_projmeta($project_id){
 						if ($project_meta['gl_proj_id'] == $project_id && $project_meta['gl_proj_meta_key'] == '_proj_sw_last_del_flag'){
 							$wpdb->update( 'wp_gl_projmeta', array ("gl_proj_meta_value" => $last_deliv_flag), array ("gl_proj_meta_id" => $project_meta['gl_proj_meta_id']) );
 						}
+
 					}
 				}
 			}
 		}
 	}
 	
-	foreach ($project_metas as $project_meta){		
+	// set _proj_sw_latest_deliv_date to most recent delivery date and _proj_sw_latest_deliv_meth to most recent delivery method
+	foreach ($project_metas as $project_meta){
 		if ($project_meta['gl_proj_id'] == $project_id && $project_meta['gl_proj_meta_key'] == '_proj_sw_latest_deliv_date'){
 			$wpdb->update( 'wp_gl_projmeta', array ("gl_proj_meta_value" => $latest_deliv_date), array ("gl_proj_meta_id" => $project_meta['gl_proj_meta_id']) );
 		}
@@ -1477,13 +1508,13 @@ function update_sw_projmeta($project_id){
 	Software elements revenue recognition method calculation
 */
 
-function update_sw_revrec($project_id, $stats){
+function update_sw_revrec($project_id){
 	global $wpdb;
-	//print_r($project_metas);
 	
 	$project_metas = $wpdb->get_results( "SELECT * FROM wp_gl_projmeta WHERE gl_proj_id = $project_id", ARRAY_A );
-	$elements = $wpdb->get_results( "SELECT * FROM wp_gl_rr WHERE gl_proj_id = $project_id", ARRAY_A );
+	$elements = $wpdb->get_results( "SELECT * FROM wp_gl_rr WHERE gl_proj_id = $project_id", ARRAY_A ); 
 	$methods = $wpdb->get_results( "SELECT * FROM wp_gl_rr_meth", ARRAY_A );
+	$stats = $wpdb->get_results( "SELECT * FROM wp_gl_rr_stat", ARRAY_A );
 	
 	foreach ($project_metas as $project_meta){
 		$key = $project_meta['gl_proj_meta_key'];
@@ -1516,50 +1547,58 @@ function update_sw_revrec($project_id, $stats){
 				break;
 		}
 	}
-		
-	foreach ($elements as $element){
+	
+	foreach ($elements as $element){  
+	
+		// if this element is software (rr_el_meth_cat == 2) and project's rr_el_stop_flag is not 1, then evaluate rev rec method for this element
 		if ($element['rr_el_meth_cat'] == 2 && ($element['rr_el_stop_flag'] == null || $element['rr_el_stop_flag'] == '' || $element['rr_el_stop_flag'] == 0)){
+			
 			// if all elements have VSOE, use individual rev rec method
 			if ($sw_all_vsoe_flag == 1){ // if _proj_sw_all_vsoe_flag value is 1, then all elements have VSOE
 				if ($element['rr_el_meth'] !== '' && $element['rr_el_meth'] !== null){ // if element has a method, use it
 					foreach ($methods as $method){ // get the methods list
 						if ($method['rr_meth_id'] == $element['rr_el_meth']){ // match the element method to the method list
-							$revrecmeth = array('rr_stat_id' => 11, 'status_desc' => $stats[10]['rr_stat_desc'], 'status_date' => $element['rr_el_meth']); // return the method name
-						} else {
-							$revrecmeth = array('rr_stat_id' => 10, 'status_desc' => $stats[9]['rr_stat_desc'], 'status_date' => $element['rr_el_meth']);
-						}
+							$revrecmeth = $stats[10]['rr_stat_desc'].$element['rr_el_meth']; // return the method name
+						} 
 					}
-				}
+				} else {
+					$revrecmeth = $stats[9]['rr_stat_desc'].$element['rr_el_meth'];
+			
+			// calculate and override rev rec method for each element under certain conditions
+			
+			// if all undelivereds have VSOE, use residual method (rev rec method for all delivereds is sw_latest_deliv_meth
+			} else if ($sw_undeliv_vsoe_flag == 1){ // if _proj_sw_undeliv_vsoe_flag is 1, then all undelivereds have VSOE
 				
-			// if all undelivereds have VSOE, use residual method
-			} else if ($sw_undeliv_vsoe_flag == 1){
-				if ($element['rr_el_odt_2'] > 0 || $element['rr_el_dt_2'] > 0){ // if _proj_sw_undeliv_vsoe_flag is 1, then all undelivereds have VSOE
-					
+				// set stop flag to prevent subsequent change to last deliverable method
+				$wpdb->update( 'wp_gl_rr', array ("rr_el_stop_flag" => 1), array ("rr_el_id" => $element['rr_el_id']) );
+				if ($element['rr_el_odt_2'] > 0 || $element['rr_el_dt_2'] > 0){ // if this element has been delivered, then set its rev rec method to sw_latest_deliv_meth
 					foreach ($methods as $method){ // get the methods list
 						if ($method['rr_meth_id'] == $sw_latest_deliv_meth){ // match the last deliverable method to the method list
-							$revrecmeth = array('rr_stat_id' => 9, 'status_desc' => $stats[8]['rr_stat_desc'], 'status_date' => $sw_latest_deliv_meth);
+							$revrecmeth = $stats[8]['rr_stat_desc'].$sw_latest_deliv_date;
 						}
 					}
-					$wpdb->update( 'wp_gl_rr', array ("rr_el_stop_flag" => 1), array ("rr_el_id" => $element['rr_el_id']) );
 				} else {
 					foreach ($methods as $method){ // get the methods list
-						if ($method['rr_meth_id'] == $element['rr_el_meth']){ // match the last deliverable method to the method list
-							$revrecmeth = array('rr_stat_id' => '', 'status_desc' => '', 'status_date' => $element['rr_meth_name']);
+						if ($method['rr_meth_id'] == $element['rr_el_meth']){ // match the element method to the method list
+							$revrecmeth = $method['rr_meth_desc']; // return the method name
 						}
 					}
-					$wpdb->update( 'wp_gl_rr', array ("rr_el_stop_flag" => 1), array ("rr_el_id" => $element['rr_el_id']) );
 				}
 				
 			//if last undelivered is PCS, use ratably over PCS term
 			} else if ($sw_undeliv_pcs_flag == 1){ // if _proj_sw_undeliv_pcs_flag is 1, then last deliverable is PCS
-				$revrecmeth = array('rr_stat_id' => 8, 'status_desc' => $stats[7]['rr_stat_desc'], 'status_date' => '');
+				$revrecmeth = $stats[7]['rr_stat_desc'];
+				
+				// set stop flag to prevent subsequent change to last deliverable method
 				$wpdb->update( 'wp_gl_rr', array ("rr_el_stop_flag" => 1), array ("rr_el_id" => $element['rr_el_id']) );
 
 			// if last undelivered is services, use ratably over services term
 			} else if ($sw_undeliv_serv_flag == 1){ // if _proj_sw_undeliv_serv_flag is 1, then last deliverable is services
 				foreach ($methods as $method){ // get the methods list
 					if ($method['rr_meth_id'] == $element['rr_el_meth']){ // match the last deliverable method to the method list
-						$revrecmeth = array('rr_stat_id' => 13, 'status_desc' => $stats[12]['rr_stat_desc'], 'status_date' => '');
+						$revrecmeth = $stats[12]['rr_stat_desc'];
+						
+						// set stop flag to prevent subsequent change to last deliverable method
 						$wpdb->update( 'wp_gl_rr', array ("rr_el_stop_flag" => 1), array ("rr_el_id" => $element['rr_el_id']) );
 					}
 				}
@@ -1574,10 +1613,11 @@ function update_sw_revrec($project_id, $stats){
 			} else if ($sw_last_del_flag == 0){ // if _proj_sw_last_del_flag is 0, then there is no last deliverable selected
 				$revrecmeth = 'Use method of last deliverable. Please select a software element as the last deliverable';*/
 
-			// instruct to enter method for last deliverable
+			// set rev rec method as condition pending determination of the last deliverable
 			} else {
-				$revrecmeth = array('rr_stat_id' => 7, 'status_desc' => $stats[6]['rr_stat_desc'], 'status_date' => '');
+				$revrecmeth = $stats[6]['rr_stat_desc'];
 			}
+
 			$wpdb->update( 'wp_gl_rr', array ("rr_el_meth_calc" => $revrecmeth), array ("rr_el_id" => $element['rr_el_id']) );
 		}
 	}
