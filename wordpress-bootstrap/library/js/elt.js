@@ -368,7 +368,7 @@ function testNode (target, nodeId){
 				evaluateNode(target, nodeId);	
 				break;	
 			}		
-		case 347: // target node is 347; evaluate previous five answers			
+		case 355: // target node is 355; evaluate previous five answers			
 			ans342 = $('span[id="342"]').parent().parent().parent().find('li.selected').html();		
 			ans351 = $('span[id="351"]').parent().parent().parent().find('li.selected').html();		
 			ans352 = $('span[id="352"]').parent().parent().parent().find('li.selected').html();		
