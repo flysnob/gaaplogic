@@ -370,60 +370,60 @@ function testNode (target, nodeId){
 			}		
 		case 347: // target node is 347; evaluate previous five answers			
 			ans342 = $('span[id="342"]').parent().parent().parent().find('li.selected').html();		
-			ans343 = $('span[id="343"]').parent().parent().parent().find('li.selected').html();		
-			ans344 = $('span[id="344"]').parent().parent().parent().find('li.selected').html();		
-			ans345 = $('span[id="345"]').parent().parent().parent().find('li.selected').html();		
-			ans346 = $('span[id="346"]').parent().parent().parent().find('li.selected').html();		
+			ans351 = $('span[id="351"]').parent().parent().parent().find('li.selected').html();		
+			ans352 = $('span[id="352"]').parent().parent().parent().find('li.selected').html();		
+			ans353 = $('span[id="353"]').parent().parent().parent().find('li.selected').html();		
+			ans354 = $('span[id="354"]').parent().parent().parent().find('li.selected').html();		
 			if (ans342 == 'No'){		
-				$('#yes-' + nodeId).removeClass('hidden'); // 'yes' equals is a derivative	
+				$('#yes-' + nodeId).removeClass('hidden'); 
 				$('#no-' + nodeId).addClass('hidden');	
-				target = '348';	
+				target = '356';	
 				evaluateNode(target, nodeId);	
 				break;	
-			} else if (ans343 == 'Yes') {		
-				$('#yes-' + nodeId).removeClass('hidden'); // 'yes' equals is a derivative	
+			} else if (ans351 == 'Yes') {		
+				$('#yes-' + nodeId).removeClass('hidden'); 
 				$('#no-' + nodeId).addClass('hidden');	
-				target = '348';	
+				target = '356';	
 				evaluateNode(target, nodeId);	
 				break;	
-			} else if (ans344 == 'Yes') {		
-				$('#yes-' + nodeId).removeClass('hidden'); // 'yes' equals is a derivative	
+			} else if (ans352 == 'Yes') {		
+				$('#yes-' + nodeId).removeClass('hidden'); 
 				$('#no-' + nodeId).addClass('hidden');	
-				target = '348';	
+				target = '356';	
 				evaluateNode(target, nodeId);	
 				break;	
-			} else if (ans345 == 'Yes') {		
-				$('#yes-' + nodeId).removeClass('hidden'); // 'yes' equals is a derivative	
+			} else if (ans353 == 'Yes') {		
+				$('#yes-' + nodeId).removeClass('hidden'); 
 				$('#no-' + nodeId).addClass('hidden');	
-				target = '348';	
+				target = '356';	
 				evaluateNode(target, nodeId);	
 				break;	
-			} else if (ans346 == 'Yes') {		
-				$('#yes-' + nodeId).removeClass('hidden'); // 'yes' equals is a derivative	
+			} else if (ans354 == 'Yes') {		
+				$('#yes-' + nodeId).removeClass('hidden'); 
 				$('#no-' + nodeId).addClass('hidden');	
-				target = '348';	
+				target = '356';	
 				evaluateNode(target, nodeId);	
 				break;	
 			} else {		
-				$('#no-' + nodeId).removeClass('hidden'); // 'no' equals not a derivative	
+				$('#no-' + nodeId).removeClass('hidden'); 	
 				$('#yes-' + nodeId).addClass('hidden');	
 				target = '2312';	
 				evaluateNode(target, nodeId);	
 				break;	
 			}		
-		case 354: // target node is 354; evaluate previous two answers			
-			ans352 = $('span[id="352"]').parent().parent().parent().find('li.selected').html();		
-			ans353 = $('span[id="353"]').parent().parent().parent().find('li.selected').html();		
-			if (ans352 == 'No'){		
+		case 361: // target node is 361; evaluate previous two answers			
+			ans359 = $('span[id="359"]').parent().parent().parent().find('li.selected').html();		
+			ans360 = $('span[id="360"]').parent().parent().parent().find('li.selected').html();		
+			if (ans359 == 'No'){		
 				$('#yes-' + nodeId).removeClass('hidden'); // 'yes' equals is indexed	
 				$('#no-' + nodeId).addClass('hidden');	
-				target = '355';	
+				target = '362';	
 				evaluateNode(target, nodeId);	
 				break;	
-			} else if (ans353 == 'No') {		
+			} else if (ans360 == 'No') {		
 				$('#yes-' + nodeId).removeClass('hidden'); // 'yes' equals is indexed	
 				$('#no-' + nodeId).addClass('hidden');	
-				target = '355';	
+				target = '362';	
 				evaluateNode(target, nodeId);	
 				break;	
 			} else {		
@@ -433,16 +433,16 @@ function testNode (target, nodeId){
 				evaluateNode(target, nodeId);	
 				break;	
 			}		
-		case 357: // target node is 357; evaluate previous two answers			
-			ans355 = $('span[id="355"]').parent().parent().parent().find('li.selected').html();		
-			ans356 = $('span[id="356"]').parent().parent().parent().find('li.selected').html();		
-			if (ans355 == 'No'){		
+		case 364: // target node is 364; evaluate previous two answers			
+			ans362 = $('span[id="362"]').parent().parent().parent().find('li.selected').html();		
+			ans363 = $('span[id="363"]').parent().parent().parent().find('li.selected').html();		
+			if (ans362 == 'No'){		
 				$('#no-' + nodeId).removeClass('hidden'); // 'no' equals not indexed	
 				$('#yes-' + nodeId).addClass('hidden');	
 				target = '2314';	
 				evaluateNode(target, nodeId);	
 				break;	
-			} else if (ans356 == 'No') {		
+			} else if (ans363 == 'No') {		
 				$('#no-' + nodeId).removeClass('hidden'); // 'no' equals not indexed	
 				$('#yes-' + nodeId).addClass('hidden');	
 				target = '2314';	
@@ -451,7 +451,7 @@ function testNode (target, nodeId){
 			} else {		
 				$('#yes-' + nodeId).removeClass('hidden'); // 'yes' equals is indexed	
 				$('#no-' + nodeId).addClass('hidden');	
-				target = '358';	
+				target = '365';	
 				evaluateNode(target, nodeId);	
 				break;	
 			}		
