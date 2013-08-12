@@ -13,73 +13,84 @@ Template Name: Homepage Show Revrec Form
 						<section class="post_content">
 									
 						<?php
-							$user_id = $current_user->ID;
-							$results = $wpdb->get_results( "SELECT * FROM wp_gl_cat ", ARRAY_A );
-						?>
-							<p><a class="btn" href="<?php echo $site_url; ?>/show-revrec-list/">Return to Arrangement List</a>&nbsp;&nbsp;&nbsp; 
-							<br />
-							<br />
 							
-							<div class="element-container">
-							<form class="form-horizontal" style="margin-top: 25px" id="project-editor" action="<?php echo $site_url; ?>/save-rr-project/" method="post"> 
+							$results = $wpdb->get_results( "SELECT * FROM wp_gl_cat ", ARRAY_A );
+							if ($current_user->ID == 0){
+							?>	
+								<div style="height: 500px">
+								<h4>You must be logged in to start a new project. Please <a href="<?php echo $site_url; ?>/login/">login</a> or <a href="<?php echo $site_url; ?>/register/">register</a>.</h4> 
+								</div>
+							<?php
 								
-								<div class="control_group row">
-									<div class="span12">
-										<label class="alert-info control-label span5 offset1" for="contract_type" style="margin-right: 5px">Arrangement type:  </label>
-										<div class="controls">
-											<select required class="span5" name="contract_type">
-												<option value="">Please Select</option>
-												<option id="single" value="single">Single Deliverable Arrangement</option>
-												<option id="multiple" value="multiple">Multiple Deliverables Arrangement</option>
-											</select>
-										</div>
-									</div>
-								</div>
-								<div class="control_group row">
-									<div class="span12">
-										<label class="alert-info control-label span5 offset1" for="project_name" style="margin-right: 5px">Arrangement date:  </label>
-										<div class="controls">
-											<input required class="input" type="date" id="project_date" name="project_date" />
-										</div>
-									</div>
-								</div>
-								<div class="control_group row">
-									<div class="span12">
-										<label class="alert-info control-label span5 offset1" for="project_name" style="margin-right: 5px">Arrangement name:  </label>
-										<div class="controls">
-											<input required class="span6" type="text" id="project_name" name="project_name" />
-										</div>
-									</div>
-								</div>
-								<div class="control_group row" style="margin-bottom: 5px">
-									<div class="span12">
-										<label class="alert-info control-label span5 offset1" for="project_desc" style="margin-right: 5px">Arrangement description:  </label>
-										<div class="controls">
-											<textarea class="span6" id="description" name="project_desc" rows="4" class="input-xlarge"></textarea>
-										</div>
-									</div>
-								</div>
-								<div class="control_group row">
-									<div class="span12">
-										<label class="alert-info control-label span5 offset1" for="project_fee" style="margin-right: 5px">Arrangement fee:  </label>
-										<div class="controls">
-											<input required type="number" id="project_fee" name="project_fee" />
-										</div>
-									</div>
-								</div>
-								<div class="control_group row" style="margin-top: 15px">
-									<div class="span12">
-										<div class="controls" style="margin-left: auto; margin-left: auto; width: 51%; margin-top: 0px; margin-botton: 15px;">
-											<input type="hidden" name="project_php" value="rr">
-											<input type="hidden" name="cat_id" value="0">
-											<input type="hidden" id="user_id" name="user_id" value="<?php echo $user_id; ?>" />
-											<input id="submit" class="btn btn-primary" type="submit" name="save-single" value="Save" />
-										</div>
-									</div>
-								</div>
+							} else {
+							?>
+								<p><a class="btn" href="<?php echo $site_url; ?>/show-revrec-list/">Return to Arrangement List</a>&nbsp;&nbsp;&nbsp; 
+								<br />
+								<br />
 								
-							</form>
-							</div>
+								<div class="element-container">
+									<form class="form-horizontal" style="margin-top: 25px" id="project-editor" action="<?php echo $site_url; ?>/save-rr-project/" method="post"> 
+										
+										<div class="control_group row">
+											<div class="span12">
+												<label class="alert-info control-label span5 offset1" for="contract_type" style="margin-right: 5px">Arrangement type:  </label>
+												<div class="controls">
+													<select required class="span5" name="contract_type">
+														<option value="">Please Select</option>
+														<option id="single" value="single">Single Deliverable Arrangement</option>
+														<option id="multiple" value="multiple">Multiple Deliverables Arrangement</option>
+													</select>
+												</div>
+											</div>
+										</div>
+										<div class="control_group row">
+											<div class="span12">
+												<label class="alert-info control-label span5 offset1" for="project_name" style="margin-right: 5px">Arrangement date:  </label>
+												<div class="controls">
+													<input required class="input" type="date" id="project_date" name="project_date" />
+												</div>
+											</div>
+										</div>
+										<div class="control_group row">
+											<div class="span12">
+												<label class="alert-info control-label span5 offset1" for="project_name" style="margin-right: 5px">Arrangement name:  </label>
+												<div class="controls">
+													<input required class="span6" type="text" id="project_name" name="project_name" />
+												</div>
+											</div>
+										</div>
+										<div class="control_group row" style="margin-bottom: 5px">
+											<div class="span12">
+												<label class="alert-info control-label span5 offset1" for="project_desc" style="margin-right: 5px">Arrangement description:  </label>
+												<div class="controls">
+													<textarea class="span6" id="description" name="project_desc" rows="4" class="input-xlarge"></textarea>
+												</div>
+											</div>
+										</div>
+										<div class="control_group row">
+											<div class="span12">
+												<label class="alert-info control-label span5 offset1" for="project_fee" style="margin-right: 5px">Arrangement fee:  </label>
+												<div class="controls">
+													<input required type="number" id="project_fee" name="project_fee" />
+												</div>
+											</div>
+										</div>
+										<div class="control_group row" style="margin-top: 15px">
+											<div class="span12">
+												<div class="controls" style="margin-left: auto; margin-left: auto; width: 51%; margin-top: 0px; margin-botton: 15px;">
+													<input type="hidden" name="project_php" value="rr">
+													<input type="hidden" name="cat_id" value="0">
+													<input type="hidden" id="user_id" name="user_id" value="<?php echo $user_id; ?>" />
+													<input id="submit" class="btn btn-primary" type="submit" name="save-single" value="Save" />
+												</div>
+											</div>
+										</div>
+										
+									</form>
+								</div>
+							<?php
+							}
+							?>
 
 							<script>
 							(function(){

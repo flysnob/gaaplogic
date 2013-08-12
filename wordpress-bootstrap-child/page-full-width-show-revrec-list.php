@@ -27,7 +27,19 @@ Template Name: Full Width Page Rev Rec List
 					?>
 						<h3>My Arrangements</h3>
 							<div id="debug"></div>
-						<a class="btn btn-success" href="<?php echo $site_url; ?>/show-revrec-form/">Create a new arrangement analysis</a>
+					<?php
+						if ($current_user->ID !== 0){
+						?>	
+							<a id="new_project_btn" class="btn btn-success" href="<?php echo $site_url; ?>/show-revrec-form/">Create a new project &raquo;</a>
+						<?php
+						} else {
+						?>	
+							<div style="height: 500px">
+							<h4>You must be logged in to start a new project. Please <a href="<?php echo $site_url; ?>/login/">login</a> or <a href="<?php echo $site_url; ?>/register/">register</a>.</h4> 
+							</div>
+						<?php
+						}
+					?>
 						<br />
 						<br />
 					<?php

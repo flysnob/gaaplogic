@@ -3,7 +3,6 @@
 Template Name: Homepage Show List
 */
 ?>
-
 <?php get_header(custom); ?>
 			
 			<div id="content" class="clearfix row-fluid">
@@ -14,18 +13,19 @@ Template Name: Homepage Show List
 						
 							<div class="span12" style="min-height: 500px">
 						
-									<?php 
-									
-										$user_id = $current_user->ID;
-										
-									?>
-										
 										<h1>My Projects</h1>
-											<div id="debug"></div>
-										<a class="btn btn-success" href="<?php echo $site_url; ?>/show-project-form/">Create a new project &raquo;</a>
+										<div id="debug"></div>
+									<?php
+										if ($current_user->ID !== 0){
+										?>	
+											<a id="new_project_btn" class="btn btn-success" href="<?php echo $site_url; ?>/show-project-form/">Create a new project &raquo;</a>
+										<?php
+										}
+									?>
+					
 										<br />
 										<br />
-							
+										 
 									<?php
 										$table = 'wp_gl_proj';
 										$results = $wpdb->get_results( "SELECT * FROM wp_gl_proj", ARRAY_A );
@@ -59,7 +59,7 @@ Template Name: Homepage Show List
 												</span>
 											
 											<?php
-												if ($value['gl_user_id'] !== '0') {
+												if ($current_user->ID !== 0) {
 												?>
 												
 													<span id="modify-project">
